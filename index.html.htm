@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Horizon 2026 - Immersion</title>
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #8e44ad;
+            --accent: #00d2ff;
+            --text: #ffffff;
+        }
+
+        body {
+            font-family: 'Quicksand', sans-serif;
+            background: #000;
+            color: var(--text);
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            background: radial-gradient(circle at center, #1e1e2f 0%, #000 100%);
+        }
+
+        /* Ambiance de fond : Particules douces */
+        .stars {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border-radius: 30px;
+            padding: 50px;
+            text-align: center;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            max-width: 450px;
+            width: 90%;
+            z-index: 10;
+            transition: all 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        .hidden { display: none; opacity: 0; transform: scale(0.9); }
+
+        h1 { font-weight: 300; letter-spacing: 2px; color: var(--accent); }
+
+        button {
+            background: transparent;
+            color: white;
+            border: 1px solid var(--accent);
+            padding: 15px 30px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 1rem;
+            margin-top: 20px;
+            transition: 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        button:hover {
+            background: var(--accent);
+            color: #000;
+            box-shadow: 0 0 20px var(--accent);
+        }
+
+        #music-control {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(255,255,255,0.1);
+            border: none;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        .confetti {
+            position: fixed;
+            z-index: 100;
+            pointer-events: none;
+            animation: fall linear forwards;
+        }
+
+        @keyframes fall {
+            to { transform: translateY(110vh) rotate(360deg); }
+        }
+
+        input {
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            padding: 12px;
+            border-radius: 10px;
+            color: white;
+            width: 80%;
+            margin: 20px 0;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+<audio id="bgMusic" loop>
+    <source src="musique.mp3.mp3.mp3" type="audio/mpeg">
+</audio>
+
+<button id="music-control" onclick="toggleMusic()">🎵</button>
+
+<div id="step1" class="card">
+    <h1>Vivez l'instant</h1>
+    <p>Allumez le son et laissez-vous guider vers 2026.</p>
+    <button onclick="startExperience()">Entrer dans l'expérience</button>
+</div>
+
+<div id="step2" class="card hidden">
+    <h3>Quelle énergie vous définit ?</h3>
+    <div style="display: flex; flex-direction: column; gap: 10px;">
+        <button onclick="saveChoice('Sérénité')">✨ Sérénité</button>
+        <button onclick="saveChoice('Énergie')">⚡ Énergie</button>
+        <button onclick="saveChoice('Mystère')">🌙 Mystère</button>
+    </div>
+</div>
+
+<div id="step3" class="card hidden">
+    <h3>Écrivez votre souhait pour 2026</h3>
+    <input type="text" id="wishInput" placeholder="...">
+    <br>
+    <button onclick="showFinal()">Finaliser</button>
+</div>
+
+<div id="final" class="card hidden">
+    <h1 id="finalTitle">Prophétie 2026</h1>
+    <div id="message" style="line-height: 1.8; font-size: 1.2rem;"></div>
+    <button onclick="location.reload()">Renaître</button>
+</div>
+
+<script>
+    const music = document.getElementById('bgMusic');
+    let mood = "";
+
+    function toggleMusic() {
+        if (music.paused) {
+            music.play();
+            document.getElementById('music-control').textContent = "⏸️";
+        } else {
+            music.pause();
+            document.getElementById('music-control').textContent = "🎵";
+        }
+    }
+
+    function startExperience() {
+        music.play();
+        document.getElementById('music-control').textContent = "⏸️";
+        transition(1, 2);
+    }
+
+    function transition(from, to) {
+        const out = document.getElementById('step' + from) || document.getElementById('final');
+        const next = document.getElementById('step' + to) || document.getElementById('final');
+        
+        out.style.opacity = "0";
+        out.style.transform = "scale(1.1)";
+        
+        setTimeout(() => {
+            out.classList.add('hidden');
+            next.classList.remove('hidden');
+            setTimeout(() => {
+                next.style.opacity = "1";
+                next.style.transform = "scale(1)";
+            }, 50);
+        }, 600);
+    }
+
+    function saveChoice(choice) {
+        mood = choice;
+        transition(2, 3);
+    }
+
+    function showFinal() {
+        const wish = document.getElementById('wishInput').value || "l'épanouissement";
+        const msg = document.getElementById('message');
+        
+        const responses = {
+            Sérénité: `Votre année 2026 sera comme une mélodie calme. En cultivant <strong>${wish}</strong>, vous trouverez un équilibre que vous n'avez jamais connu.`,
+            Énergie: `2026 sera électrique ! Votre vœu de <strong>${wish}</strong> va propulser vos projets vers des sommets inattendus.`,
+            Mystère: `L'inconnu est votre allié. 2026 vous réserve des surprises là où vous ne les attendez pas, portées par <strong>${wish}</strong>.`
+        };
+
+        msg.innerHTML = responses[mood];
+        transition(3, 'final');
+        launchConfetti();
+    }
+
+    function launchConfetti() {
+        const colors = ['#8e44ad', '#00d2ff', '#fd79a8', '#ffffff'];
+        for (let i = 0; i < 50; i++) {
+            const conf = document.createElement('div');
+            conf.className = 'confetti';
+            conf.style.width = '8px';
+            conf.style.height = '8px';
+            conf.style.background = colors[Math.floor(Math.random() * colors.length)];
+            conf.style.left = Math.random() * 100 + 'vw';
+            conf.style.top = '-10px';
+            conf.style.borderRadius = '50%';
+            conf.style.animationDuration = (3 + Math.random() * 2) + 's';
+            conf.style.opacity = Math.random();
+            document.body.appendChild(conf);
+        }
+    }
+</script>
+
+</body>
+</html>
